@@ -1,102 +1,217 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>摄影作品集</title>
+  <title>LENS · 光影作品集</title>
   <link rel="stylesheet" href="style.css"/>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet"/>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
 </head>
 <body>
 
+<!-- 粒子背景 -->
+<canvas id="particles"></canvas>
+
 <!-- 顶部导航 -->
-<header class="site-header">
+<header class="site-header" id="header">
   <div class="header-inner">
-    <div class="logo">📷 <span>LENS</span></div>
-    <nav>
-      <a href="#" class="nav-link active" data-filter="all">全部</a>
-      <a href="#" class="nav-link" data-filter="landscape">风光</a>
-      <a href="#" class="nav-link" data-filter="portrait">人像</a>
-      <a href="#" class="nav-link" data-filter="street">街拍</a>
-      <a href="#" class="nav-link" data-filter="bookmarks" id="bookmark-tab">
+    <div class="logo">
+      <span class="logo-icon">◈</span>
+      <span class="logo-text">LENS</span>
+    </div>
+    <nav class="main-nav">
+      <a href="#" class="nav-link active" data-filter="all">全部作品</a>
+      <a href="#" class="nav-link" data-filter="photo">摄影</a>
+      <a href="#" class="nav-link" data-filter="video">影像</a>
+      <a href="#" class="nav-link" data-filter="bookmarks">
         <i class="fa-solid fa-bookmark"></i> 收藏
       </a>
     </nav>
-    <div class="header-right">
-      <span class="stats-badge" id="like-count">❤️ 0</span>
-      <span class="stats-badge" id="bookmark-count">🔖 0</span>
+    <div class="header-actions">
+      <div class="stat-pill"><i class="fa-solid fa-heart"></i> <span id="total-likes">0</span></div>
+      <div class="stat-pill"><i class="fa-solid fa-bookmark"></i> <span id="total-bookmarks">0</span></div>
+      <button class="btn-upload-top" id="btn-upload-top">
+        <i class="fa-solid fa-plus"></i> 上传作品
+      </button>
     </div>
+    <button class="hamburger" id="hamburger"><i class="fa-solid fa-bars"></i></button>
   </div>
 </header>
 
 <!-- 英雄区 -->
-<section class="hero">
-  <div class="hero-text">
-    <h1>用光影记录世界</h1>
-    <p>Sony A7M4 · 每一帧都是故事</p>
+<section class="hero" id="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-content">
+    <div class="hero-badge">Sony A7M4 · 光影记录者</div>
+    <h1 class="hero-title">
+      <span class="line1">用镜头</span>
+      <span class="line2">定格永恒</span>
+    </h1>
+    <p class="hero-sub">每一帧都是故事，每一刻都值得铭记</p>
+    <div class="hero-stats">
+      <div class="hstat"><span id="stat-works">0</span><small>作品</small></div>
+      <div class="hstat-divider"></div>
+      <div class="hstat"><span id="stat-likes-hero">0</span><small>获赞</small></div>
+      <div class="hstat-divider"></div>
+      <div class="hstat"><span id="stat-views">2.4K</span><small>浏览</small></div>
+    </div>
+    <a href="#gallery-section" class="btn-explore">
+      探索作品 <i class="fa-solid fa-arrow-down"></i>
+    </a>
+  </div>
+  <div class="hero-scroll-indicator">
+    <div class="scroll-line"></div>
   </div>
 </section>
 
-<!-- 作品网格 -->
-<main class="gallery-wrap">
-  <div class="gallery" id="gallery">
-    <!-- 卡片由 JS 生成 -->
+<!-- 过滤栏 -->
+<div class="filter-bar" id="gallery-section">
+  <div class="filter-inner">
+    <div class="filter-tabs">
+      <button class="ftab active" data-filter="all">全部</button>
+      <button class="ftab" data-filter="landscape">风光</button>
+      <button class="ftab" data-filter="portrait">人像</button>
+      <button class="ftab" data-filter="street">街拍</button>
+      <button class="ftab" data-filter="video">影像</button>
+      <button class="ftab" data-filter="bookmarks"><i class="fa-solid fa-bookmark"></i> 收藏</button>
+    </div>
+    <div class="view-opts">
+      <button class="view-btn active" id="view-masonry" title="瀑布流"><i class="fa-solid fa-grip"></i></button>
+      <button class="view-btn" id="view-grid" title="网格"><i class="fa-solid fa-table-cells"></i></button>
+    </div>
   </div>
-  <div class="empty-state" id="empty-state" style="display:none;">
-    <i class="fa-solid fa-bookmark"></i>
-    <p>还没有收藏的作品</p>
+</div>
+
+<!-- 画廊 -->
+<main class="gallery-wrap">
+  <div class="gallery masonry" id="gallery"></div>
+  <div class="empty-state" id="empty-state" style="display:none">
+    <div class="empty-icon">◈</div>
+    <h3>这里还没有作品</h3>
+    <p>点击右下角 + 上传你的第一件作品</p>
   </div>
 </main>
 
 <!-- 灯箱 -->
 <div class="lightbox" id="lightbox">
-  <button class="lb-close" id="lb-close"><i class="fa-solid fa-xmark"></i></button>
-  <button class="lb-nav lb-prev" id="lb-prev"><i class="fa-solid fa-chevron-left"></i></button>
-  <button class="lb-nav lb-next" id="lb-next"><i class="fa-solid fa-chevron-right"></i></button>
-  <div class="lb-content">
-    <img id="lb-img" src="" alt=""/>
-    <div class="lb-info">
-      <h2 id="lb-title"></h2>
-      <p id="lb-desc"></p>
-      <div class="lb-actions">
-        <button class="btn-action" id="lb-like"><i class="fa-heart fa-regular"></i> <span id="lb-like-count">0</span></button>
-        <button class="btn-action" id="lb-bookmark"><i class="fa-bookmark fa-regular"></i> 收藏</button>
+  <div class="lb-overlay" id="lb-overlay"></div>
+  <div class="lb-panel">
+    <!-- 媒体区 -->
+    <div class="lb-media-wrap">
+      <img id="lb-img" src="" alt="" style="display:none"/>
+      <video id="lb-video" controls style="display:none"></video>
+      <button class="lb-nav lb-prev" id="lb-prev"><i class="fa-solid fa-chevron-left"></i></button>
+      <button class="lb-nav lb-next" id="lb-next"><i class="fa-solid fa-chevron-right"></i></button>
+    </div>
+    <!-- 信息侧边 -->
+    <div class="lb-sidebar">
+      <div class="lb-sidebar-top">
+        <button class="lb-close" id="lb-close"><i class="fa-solid fa-xmark"></i></button>
+        <span class="lb-category" id="lb-cat"></span>
+        <h2 class="lb-title" id="lb-title"></h2>
+        <p class="lb-desc" id="lb-desc"></p>
+        <div class="lb-meta" id="lb-meta"></div>
+      </div>
+
+      <div class="lb-actions-row">
+        <button class="lb-action-btn" id="lb-like">
+          <i class="fa-regular fa-heart"></i>
+          <span id="lb-like-num">0</span>
+        </button>
+        <button class="lb-action-btn" id="lb-bookmark">
+          <i class="fa-regular fa-bookmark"></i>
+          <span>收藏</span>
+        </button>
+        <button class="lb-action-btn" id="lb-download">
+          <i class="fa-solid fa-download"></i>
+          <span>下载</span>
+        </button>
+        <button class="lb-action-btn" id="lb-share">
+          <i class="fa-solid fa-share-nodes"></i>
+          <span>分享</span>
+        </button>
+      </div>
+
+      <!-- 评论区 -->
+      <div class="comments-section">
+        <h4 class="comments-title"><i class="fa-regular fa-comment-dots"></i> 评论 <span id="comment-count">0</span></h4>
+        <div class="comment-list" id="comment-list"></div>
+        <div class="comment-input-wrap">
+          <div class="comment-avatar">你</div>
+          <div class="comment-input-box">
+            <input type="text" id="comment-name" placeholder="你的名字" class="ci-name"/>
+            <textarea id="comment-text" placeholder="写下你的感受…" class="ci-text" rows="2"></textarea>
+            <button class="ci-submit" id="ci-submit">
+              <i class="fa-solid fa-paper-plane"></i> 发送
+            </button>
+          </div>
+        </div>
       </div>
     </div>
   </div>
 </div>
-<div class="lb-overlay" id="lb-overlay"></div>
 
-<!-- 上传提示浮层 -->
-<button class="fab-upload" id="fab-upload" title="上传作品">
-  <i class="fa-solid fa-plus"></i>
-</button>
-
-<div class="upload-modal" id="upload-modal" style="display:none;">
+<!-- 上传弹窗 -->
+<div class="upload-modal" id="upload-modal" style="display:none">
   <div class="upload-box">
-    <h3>上传作品</h3>
-    <input type="file" id="file-input" accept="image/*" multiple/>
-    <label for="file-input" class="upload-label">
-      <i class="fa-solid fa-cloud-arrow-up"></i>
-      <span>点击或拖入图片</span>
-    </label>
-    <input type="text" id="photo-title" placeholder="作品标题" class="text-input"/>
-    <input type="text" id="photo-desc" placeholder="简介（可选）" class="text-input"/>
-    <select id="photo-cat" class="text-input">
-      <option value="landscape">风光</option>
-      <option value="portrait">人像</option>
-      <option value="street">街拍</option>
-    </select>
-    <div class="upload-preview" id="upload-preview"></div>
-    <div class="modal-btns">
-      <button class="btn-cancel" id="upload-cancel">取消</button>
-      <button class="btn-submit" id="upload-submit">发布</button>
+    <div class="upload-header">
+      <h3><i class="fa-solid fa-cloud-arrow-up"></i> 上传作品</h3>
+      <button class="upload-close" id="upload-close"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+
+    <div class="drop-zone" id="drop-zone">
+      <input type="file" id="file-input" accept="image/*,video/*" multiple hidden/>
+      <div class="dz-inner" id="dz-inner">
+        <i class="fa-solid fa-photo-film"></i>
+        <p>拖拽或点击上传</p>
+        <small>支持 JPG / PNG / MP4 / MOV · 最大 500MB</small>
+      </div>
+      <div class="upload-previews" id="upload-previews"></div>
+    </div>
+
+    <div class="upload-fields">
+      <input type="text" id="up-title" placeholder="作品标题 *" class="u-input"/>
+      <textarea id="up-desc" placeholder="作品描述（可选）" class="u-input u-textarea" rows="2"></textarea>
+      <div class="u-row">
+        <select id="up-cat" class="u-input">
+          <option value="landscape">🏔 风光</option>
+          <option value="portrait">👤 人像</option>
+          <option value="street">🌆 街拍</option>
+          <option value="other">✨ 其他</option>
+        </select>
+        <label class="u-toggle">
+          <input type="checkbox" id="up-downloadable" checked/>
+          <span class="u-toggle-track"></span>
+          <span>允许下载</span>
+        </label>
+      </div>
+    </div>
+
+    <div class="upload-footer">
+      <button class="u-btn-cancel" id="u-cancel">取消</button>
+      <button class="u-btn-submit" id="u-submit">
+        <i class="fa-solid fa-rocket"></i> 发布作品
+      </button>
     </div>
   </div>
 </div>
 
+<!-- FAB -->
+<button class="fab" id="fab"><i class="fa-solid fa-plus"></i></button>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
 <footer class="site-footer">
-  <p>© 2026 · Powered by Sony A7M4 & ❤️</p>
+  <div class="footer-inner">
+    <div class="footer-logo">◈ LENS</div>
+    <p>用 Sony A7M4 记录世界的美好</p>
+    <div class="footer-links">
+      <a href="https://github.com/lixuejin22-lgtm/photo-portfolio" target="_blank"><i class="fa-brands fa-github"></i> GitHub</a>
+    </div>
+  </div>
 </footer>
 
 <script src="app.js"></script>
